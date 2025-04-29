@@ -20,7 +20,7 @@ const RecommendationBox: React.FC = () => {
           className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors"
         >
           <RotateCw size={16} className={loading ? 'animate-spin' : ''} />
-          Nova Sugestão
+          Atualizar Sugestão
         </button>
       </div>
 

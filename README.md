@@ -31,7 +31,10 @@ Este projeto foi desenvolvido com as seguintes tecnologias:
 
 - Visualização detalhada dos resultados de sorteios anteriores
 - Análise estatística de frequência dos números
-- Recomendações de jogos baseadas em diferentes metodologias
+- Modo noturno padrão para melhor experiência visual
+- Recomendações automáticas geradas ao carregar a aplicação
+- Análise de IA instantânea ao inicializar o site
+- Possibilidade de atualizar as sugestões e análises a qualquer momento
 - Filtros por período para análise específica
 - Interface responsiva para acesso em diferentes dispositivos
 - Informações atualizadas sobre o próximo sorteio
