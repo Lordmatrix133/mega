@@ -1,0 +1,260 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 0 165 80;
+    --color-accent: 249 115 22;
+  }
+  
+  body {
+    @apply bg-gray-100 dark:bg-gray-900 min-h-screen;
+  }
+
+  /* Personalização da barra de rolagem */
+  ::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-200 dark:bg-gray-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-green-500 dark:bg-green-600 rounded-full;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='1' x2='12' y2='23'%3E%3C/line%3E%3Cpath d='M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-green-600 dark:bg-green-500;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.green.500') theme('colors.gray.200');
+  }
+
+  .dark * {
+    scrollbar-color: theme('colors.green.600') theme('colors.gray.700');
+  }
+}
+
+@layer components {
+  .mega-number {
+    @apply bg-green-600 text-white dark:bg-green-600 dark:text-white;
+    @apply w-10 h-10 rounded-full;
+    @apply flex items-center justify-center;
+    @apply text-sm font-bold;
+  }
+
+  /* Versão menor do mega-number para tabelas */
+  .mega-number-sm {
+    @apply bg-green-600 text-white dark:bg-green-600 dark:text-white;
+    @apply w-7 h-7 rounded-full;
+    @apply flex items-center justify-center;
+    @apply text-xs font-medium;
+  }
+
+  .number-ball {
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-transform;
+  }
+  
+  .number-ball:hover {
+    @apply transform scale-110;
+  }
+  
+  .tooltip {
+    @apply absolute z-50 bg-white dark:bg-gray-800 shadow-lg rounded-md p-2 
+           invisible group-hover:visible transition-all duration-200 text-sm opacity-0 group-hover:opacity-100;
+  }
+  
+  .tooltip-arrow {
+    @apply absolute w-3 h-3 rotate-45 bg-inherit;
+  }
+
+  /* Banner de acumulado animado */
+  .acumulou-banner {
+    @apply relative overflow-hidden;
+    @apply bg-gradient-to-r from-yellow-500 to-amber-600 dark:from-yellow-600 dark:to-amber-700;
+    @apply py-3 px-4 rounded-md text-center;
+    @apply font-bold text-lg text-white shadow-md;
+  }
+
+  /* Animação para os cifrões nos painéis de recomendação */
+  @keyframes floating-dollar {
+    0% {
+      transform: translateY(0) rotate(0deg) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(-30px) rotate(10deg) scale(1.2);
+      opacity: 0.9;
+    }
+    90% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: translateY(-60px) rotate(25deg) scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  .money-icon {
+    @apply absolute text-yellow-400 dark:text-yellow-300 opacity-70 text-xs font-bold;
+    z-index: 5;
+    animation: floating-dollar 4s ease-in-out infinite;
+  }
+
+  .acumulou-banner .money-icon {
+    @apply absolute text-yellow-200;
+    animation: float 3s ease-in infinite;
+  }
+
+  /* Controles de navegação de paginação */
+  .pagination-controls {
+    @apply flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg mt-4 shadow-sm;
+  }
+
+  .pagination-button {
+    @apply px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 
+           rounded-md hover:bg-green-500 hover:text-white dark:hover:bg-green-600
+           transition-all duration-200 font-medium text-sm flex items-center;
+  }
+
+  .pagination-info {
+    @apply text-sm text-gray-600 dark:text-gray-400 flex items-center;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Estilos para tabelas com scroll horizontal */
+.results-table-container {
+  @apply relative overflow-x-auto;
+  /* Sombra de indicação horizontal */
+  background: 
+    linear-gradient(to right, theme('colors.white'), transparent 5%, transparent 95%, theme('colors.white')) 0 0 / 100% 100%,
+    linear-gradient(to right, rgba(0,0,0,0.25), transparent 5%) 0 0 / 5% 100%,
+    linear-gradient(to left, rgba(0,0,0,0.25), transparent 5%) 100% 0 / 5% 100%;
+  background-repeat: no-repeat;
+}
+
+.dark .results-table-container {
+  background: 
+    linear-gradient(to right, theme('colors.gray.800'), transparent 5%, transparent 95%, theme('colors.gray.800')) 0 0 / 100% 100%,
+    linear-gradient(to right, rgba(0,0,0,0.5), transparent 5%) 0 0 / 5% 100%,
+    linear-gradient(to left, rgba(0,0,0,0.5), transparent 5%) 100% 0 / 5% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Animações */
+@keyframes pulse-green {
+  0%, 100% {
+    background-color: rgb(var(--color-primary));
+  }
+  50% {
+    background-color: rgba(var(--color-primary), 0.7);
+  }
+}
+
+.animate-pulse-green {
+  animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animação para os cifrões */
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100px) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in infinite;
+}
+
+/* Garantir que textos em modo escuro tenham o contraste adequado */
+.dark .text-gray-900 {
+  @apply text-white;
+}
+
+.dark .text-gray-800 {
+  @apply text-gray-100;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-300;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-400;
+}
+
+/* Adicionar suporte para text-zinc */
+.text-zinc-500 {
+  @apply text-gray-500;
+}
+
+/* Classes last para usar com border */
+.last\:border-0:last-child {
+  border-width: 0px;
+}
+
+.last\:pb-0:last-child {
+  padding-bottom: 0px;
+}
+
+/* Animações para o modal de cópia */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out forwards;
+}
