@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, X } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
 
 const DateFilter: React.FC = () => {
   const { dateRange, setDateRange, results } = useData();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const filterBtnRef = useRef<HTMLButtonElement>(null);
   const [tempRange, setTempRange] = useState<{
     startDate: string;
     endDate: string;
@@ -16,6 +17,23 @@ const DateFilter: React.FC = () => {
   useEffect(() => {
     setTempRange(dateRange);
   }, [dateRange]);
+
+  // Fechar o filtro se clicar fora dele
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && 
+          filterBtnRef.current && 
+          !filterBtnRef.current.contains(event.target as Node) &&
+          !(event.target as Element).closest('.date-filter-popup')) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const formatDateForDisplay = (dateString: string): string => {
     if (!dateString) return '';
@@ -136,10 +154,11 @@ const DateFilter: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full sm:w-auto">
       <button
+        ref={filterBtnRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors w-full sm:w-auto justify-center sm:justify-start"
       >
         <Calendar size={16} />
         <span>
@@ -150,10 +169,10 @@ const DateFilter: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10 transition-all">
-          <div className="p-4">
+        <div className="date-filter-popup fixed sm:absolute left-1/2 sm:left-auto top-1/2 sm:top-full transform -translate-x-1/2 sm:-translate-x-0 -translate-y-1/2 sm:-translate-y-0 sm:right-0 sm:mt-2 w-80 sm:w-72 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-30 transition-all">
+          <div className="relative p-4">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Período</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Período</h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
@@ -199,20 +218,32 @@ const DateFilter: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between mt-5 pt-3 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handleCancel}
-                className="px-3 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                className="px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
               >
                 Cancelar
               </button>
-              <button
-                onClick={handleApply}
-                className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-              >
-                Aplicar Filtro
-              </button>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={handleReset}
+                  className="px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                  Resetar
+                </button>
+                <button
+                  onClick={handleApply}
+                  className="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                >
+                  Aplicar
+                </button>
+              </div>
             </div>
+            
+            {/* Overlay de fundo para dispositivos móveis */}
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[-1] sm:hidden" onClick={() => setIsOpen(false)}></div>
           </div>
         </div>
       )}
