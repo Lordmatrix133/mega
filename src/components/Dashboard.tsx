@@ -12,11 +12,11 @@ import { DataProvider } from '../contexts/DataContext';
 // Componente principal do Dashboard
 const DashboardContent: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors overflow-x-hidden w-full">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex justify-between items-center mb-6">
+      <main className="w-full mx-auto px-3 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Painel de Análise da Mega Sena</h1>
           <DateFilter />
         </div>
@@ -43,7 +43,7 @@ const DashboardContent: React.FC = () => {
           </div>
           
           <div className="lg:col-span-1">
-            <section id="recommendations" className="sticky top-6">
+            <section id="recommendations" className="lg:sticky lg:top-6">
               <RecommendationBox />
             </section>
           </div>

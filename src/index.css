@@ -8,6 +8,12 @@
     --color-accent: 249 115 22;
   }
   
+  html, body {
+    @apply overflow-x-hidden; /* Previne scroll horizontal indesejado */
+    width: 100%;
+    position: relative;
+  }
+  
   body {
     @apply bg-gray-100 dark:bg-gray-900 min-h-screen;
   }
