@@ -160,11 +160,17 @@ const DateFilter: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors w-full sm:w-auto justify-center sm:justify-start"
       >
-        <Calendar size={16} />
-        <span>
-          {dateRange.startDate && dateRange.endDate
-            ? `${formatDateForDisplay(dateRange.startDate)} - ${formatDateForDisplay(dateRange.endDate)}`
-            : 'Todo período'}
+        <Calendar size={16} className="text-gray-600 dark:text-gray-300" />
+        <span className="text-gray-700 dark:text-white">
+          {dateRange.startDate && dateRange.endDate ? (
+            <span>
+              <span className="font-semibold dark:font-bold">{formatDateForDisplay(dateRange.startDate)}</span>
+              <span className="mx-1">-</span>
+              <span className="font-semibold dark:font-bold">{formatDateForDisplay(dateRange.endDate)}</span>
+            </span>
+          ) : (
+            'Todo período'
+          )}
         </span>
       </button>
 
