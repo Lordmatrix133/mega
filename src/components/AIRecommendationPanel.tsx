@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
 import { analyzeResultsWithAI } from '../utils/aiAnalyzer';
 import { AIAnalysisResult, AIRecommendationSettings } from '../types';
@@ -11,6 +11,7 @@ const AIRecommendationPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [showCopyModal, setShowCopyModal] = useState<boolean>(false);
+  const analysisGeneratedRef = useRef<boolean>(false);
   const [settings, setSettings] = useState<AIRecommendationSettings>({
     useHistoricalPatterns: true,
     useFrequencyAnalysis: true,
@@ -23,12 +24,18 @@ const AIRecommendationPanel: React.FC = () => {
     iterationDepth: 10000
   });
 
-  // Gerar análise quando os dados forem carregados
+  // Gerar análise quando os dados forem carregados pela primeira vez nesta sessão
   useEffect(() => {
-    if (filteredResults.length > 0 && numberStatistics.length > 0 && !aiResult) {
+    if (!loading && 
+        filteredResults.length > 0 && 
+        numberStatistics.length > 0 && 
+        !aiResult && 
+        !processing && 
+        !analysisGeneratedRef.current) {
       generateAnalysis();
+      analysisGeneratedRef.current = true;
     }
-  }, [filteredResults, numberStatistics]);
+  }, [filteredResults, numberStatistics, loading]);
 
   // Função para calcular há quantos sorteios um número apareceu pela última vez
   const getLastAppearance = (number: number) => {

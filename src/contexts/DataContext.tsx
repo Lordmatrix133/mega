@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { MegaSenaResult, NumberStatistics, DateRange, RecommendationSet } from '../types';
 import { fetchMegaSenaResults } from '../services/api';
 import { calculateNumberStatistics, generateRecommendation } from '../utils/helpers';
@@ -29,6 +29,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     endDate: '',
   });
   const [recommendations, setRecommendations] = useState<RecommendationSet[]>([]);
+  
+  // Referência para controlar se as recomendações já foram geradas nesta sessão
+  const recommendationsGeneratedRef = useRef<boolean>(false);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -48,9 +51,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const stats = calculateNumberStatistics(filteredResults);
       setNumberStatistics(stats);
       
-      // Generate initial recommendations
-      if (recommendations.length === 0) {
-        generateNewRecommendation();
+      // Gerar recomendação apenas se ainda não foi gerada nesta sessão
+      if (stats.length > 0 && !recommendationsGeneratedRef.current) {
+        generateNewRecommendationInternal(stats);
+        recommendationsGeneratedRef.current = true;
       }
     }
   }, [filteredResults]);
@@ -152,14 +156,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setFilteredResults(filtered);
   };
 
-  const generateNewRecommendation = (): void => {
-    if (numberStatistics.length === 0) return;
+  // Função interna para gerar recomendações
+  const generateNewRecommendationInternal = (stats = numberStatistics): void => {
+    if (stats.length === 0) return;
     
-    const recommendedNumbers = generateRecommendation(numberStatistics);
+    const recommendedNumbers = generateRecommendation(stats);
     
     // Encontrar estatísticas dos números recomendados
     const selectedStats = recommendedNumbers.map(num => 
-      numberStatistics.find(stat => stat.number === num)!
+      stats.find(stat => stat.number === num)!
     );
     
     // Calcular estatísticas médias
@@ -197,6 +202,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     
     setRecommendations([newRecommendation, ...recommendations.slice(0, 4)]);
+  };
+
+  // Função pública exposta pelo contexto
+  const generateNewRecommendation = (): void => {
+    generateNewRecommendationInternal();
   };
 
   const value = {
