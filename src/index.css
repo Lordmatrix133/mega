@@ -75,13 +75,75 @@
     @apply transform scale-110;
   }
   
+  /* Classes de tooltip adaptadas para dispositivos móveis */
   .tooltip {
     @apply absolute z-50 bg-white dark:bg-gray-800 shadow-lg rounded-md p-2 
            invisible group-hover:visible transition-all duration-200 text-sm opacity-0 group-hover:opacity-100;
+    max-width: min(90vw, 300px); /* Limita a largura em dispositivos móveis */
   }
   
+  /* Classes para posicionar tooltips em diferentes áreas */
+  .tooltip-left {
+    left: 0;
+    transform: translateX(0) translateY(-100%);
+  }
+  
+  .tooltip-right {
+    right: 0;
+    transform: translateX(0) translateY(-100%);
+  }
+  
+  .tooltip-center {
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+  }
+  
+  /* Arrow do tooltip */
   .tooltip-arrow {
     @apply absolute w-3 h-3 rotate-45 bg-inherit;
+  }
+  
+  /* Adapta tooltips que estariam fora da tela */
+  @media (max-width: 640px) {
+    .group:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+      /* Garantir que esteja sempre visível */
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+    }
+    
+    /* Ajusta tooltips nos extremos */
+    .group:first-child .tooltip,
+    .group:nth-child(1) .tooltip,
+    .group:nth-child(2) .tooltip {
+      left: 0;
+      transform: translateX(0) translateY(-100%);
+    }
+    
+    .group:last-child .tooltip,
+    .group:nth-last-child(1) .tooltip,
+    .group:nth-last-child(2) .tooltip {
+      left: auto;
+      right: 0;
+      transform: translateX(0) translateY(-100%);
+    }
+    
+    /* Para os mini-tooltips do mapa de calor */
+    .group:first-child .mobile-tooltip,
+    .group:nth-child(1) .mobile-tooltip,
+    .group:nth-child(2) .mobile-tooltip {
+      left: 0;
+      transform: translateX(0);
+    }
+    
+    .group:last-child .mobile-tooltip,
+    .group:nth-last-child(1) .mobile-tooltip,
+    .group:nth-last-child(2) .mobile-tooltip {
+      left: auto;
+      right: 0;
+      transform: translateX(0);
+    }
   }
 
   /* Banner de acumulado animado */

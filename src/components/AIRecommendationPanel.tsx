@@ -447,7 +447,7 @@ const AIRecommendationPanel: React.FC = () => {
                       </div>
                       
                       {/* Mini tooltip on hover */}
-                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 text-[10px] py-0.5 px-1.5 rounded shadow-sm pointer-events-none whitespace-nowrap z-10">
+                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 text-[10px] py-0.5 px-1.5 rounded shadow-sm pointer-events-none whitespace-nowrap z-10 mobile-tooltip">
                         Nº {item.number}: {realFreq} sorteios
                       </div>
                     </div>
