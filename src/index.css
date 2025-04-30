@@ -113,6 +113,12 @@
       transform: translateX(-50%) translateY(-100%);
     }
     
+    /* Tooltip mais próximo ao elemento em mobile */
+    .mobile-tooltip-close {
+      bottom: 105% !important; /* Força o tooltip a ficar mais próximo */
+      margin-bottom: 0 !important;
+    }
+    
     /* Ajusta tooltips nos extremos */
     .group:first-child .tooltip,
     .group:nth-child(1) .tooltip,
