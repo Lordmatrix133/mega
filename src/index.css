@@ -106,33 +106,53 @@
   /* Adapta tooltips que estariam fora da tela */
   @media (max-width: 640px) {
     .group:hover .tooltip {
-      visibility: visible;
-      opacity: 1;
-      /* Garantir que esteja sempre visível */
-      left: 50%;
-      transform: translateX(-50%) translateY(-100%);
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 50 !important;
     }
     
-    /* Tooltip mais próximo ao elemento em mobile */
-    .mobile-tooltip-close {
-      bottom: 105% !important; /* Força o tooltip a ficar mais próximo */
-      margin-bottom: 0 !important;
+    /* Tooltip EXATAMENTE acima do elemento em mobile */
+    .mobile-tooltip-exact {
+      position: absolute !important;
+      bottom: 100% !important;
+      margin-bottom: 1px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 200px !important;
+      max-width: 90vw !important;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3) !important;
     }
     
     /* Ajusta tooltips nos extremos */
-    .group:first-child .tooltip,
-    .group:nth-child(1) .tooltip,
-    .group:nth-child(2) .tooltip {
+    .group:first-child .tooltip:not(.mobile-tooltip-exact),
+    .group:nth-child(1) .tooltip:not(.mobile-tooltip-exact),
+    .group:nth-child(2) .tooltip:not(.mobile-tooltip-exact) {
       left: 0;
       transform: translateX(0) translateY(-100%);
     }
     
-    .group:last-child .tooltip,
-    .group:nth-last-child(1) .tooltip,
-    .group:nth-last-child(2) .tooltip {
+    .group:last-child .tooltip:not(.mobile-tooltip-exact),
+    .group:nth-last-child(1) .tooltip:not(.mobile-tooltip-exact),
+    .group:nth-last-child(2) .tooltip:not(.mobile-tooltip-exact) {
       left: auto;
       right: 0;
       transform: translateX(0) translateY(-100%);
+    }
+    
+    /* Ajustes para tooltips nos extremos laterais */
+    .group:first-child .mobile-tooltip-exact,
+    .group:nth-child(1) .mobile-tooltip-exact,
+    .group:nth-child(2) .mobile-tooltip-exact {
+      left: 20px !important;
+      transform: translateX(0) !important;
+    }
+    
+    .group:last-child .mobile-tooltip-exact,
+    .group:nth-last-child(1) .mobile-tooltip-exact,
+    .group:nth-last-child(2) .mobile-tooltip-exact {
+      left: auto !important;
+      right: 20px !important;
+      transform: translateX(0) !important;
     }
     
     /* Para os mini-tooltips do mapa de calor */
