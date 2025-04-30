@@ -64,7 +64,17 @@ const RecommendationBox: React.FC = () => {
                     
                     {/* Tooltip com estatísticas detalhadas */}
                     {stats && (
-                      <div className="tooltip mobile-tooltip-exact bottom-full left-1/2 transform -translate-x-1/2 -translate-y-1" style={{position: 'absolute', bottom: '100%', marginBottom: '2px'}}>
+                      <div className="tooltip mobile-tooltip-exact bottom-full w-48" 
+                           style={{
+                             position: 'absolute', 
+                             bottom: '100%', 
+                             marginBottom: '2px', 
+                             left: '50%', 
+                             transform: 'translateX(-50%)',
+                             width: '180px',
+                             maxWidth: '90vw',
+                             zIndex: 100
+                           }}>
                         <div className="text-center font-medium border-b pb-2 mb-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
                           Número {number}
                         </div>
