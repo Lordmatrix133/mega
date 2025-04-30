@@ -64,7 +64,7 @@ const RecommendationBox: React.FC = () => {
                     
                     {/* Tooltip com estatísticas detalhadas */}
                     {stats && (
-                      <div className="tooltip bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 w-48 tooltip-center">
+                      <div className="tooltip bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 w-48">
                         <div className="text-center font-medium border-b pb-2 mb-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
                           Número {number}
                         </div>
