@@ -311,7 +311,11 @@ const AIRecommendationPanel: React.FC = () => {
               <span className="money-icon" style={{ left: '70%', top: '10%', animationDelay: '0.6s' }}>$</span>
               <span className="money-icon" style={{ left: '85%', top: '5%', animationDelay: '1.4s' }}>$</span>
               
-              {aiResult.recommendedNumbers.map(number => {
+              {/* Organização triangular das bolas verdes */}
+              <div className="flex flex-col items-center w-full">
+                {/* Primeira linha - 3 bolas */}
+                <div className="flex justify-center gap-3 mb-4">
+                  {aiResult.recommendedNumbers.slice(0, 3).map(number => {
                 // Encontrar estatísticas deste número no heatmap
                 const stats = aiResult.heatmap.find(item => item.number === number);
                 
@@ -384,6 +388,162 @@ const AIRecommendationPanel: React.FC = () => {
                   </div>
                 );
               })}
+                </div>
+                
+                {/* Segunda linha - 2 bolas */}
+                <div className="flex justify-center gap-3 mb-4">
+                  {aiResult.recommendedNumbers.slice(3, 5).map(number => {
+                    // Encontrar estatísticas deste número no heatmap
+                    const stats = aiResult.heatmap.find(item => item.number === number);
+                    
+                    return (
+                      <div key={number} className="relative group">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center font-bold text-xl shadow-xl transform hover:scale-110 transition-all duration-300 border-2 border-white dark:border-gray-700">
+                          {number}
+                        </div>
+                        
+                        {/* Badge de frequência */}
+                        {stats && (
+                          <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs rounded-full w-8 h-8 flex flex-col items-center justify-center font-bold shadow-md border border-white dark:border-gray-700">
+                            <span>{getFrequencyForNumber(number)}x</span>
+                          </div>
+                        )}
+                        
+                        {/* Tooltip com estatísticas - versão modernizada */}
+                        <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-200 text-xs rounded-xl py-3 px-4 shadow-2xl z-10 w-56 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+                          <div className="text-center mb-3">
+                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg shadow-inner">
+                              {number}
+                            </span>
+                            <div className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">Estatísticas</div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            {/* Barra de progresso para frequência */}
+                            <div>
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-xs font-medium">Frequência</span>
+                                <span className="text-xs font-bold">{getFrequencyForNumber(number)}x</span>
+                              </div>
+                              <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full" 
+                                     style={{ width: `${Math.min(100, getFrequencyForNumber(number) * 3)}%` }}></div>
+                              </div>
+                            </div>
+                            
+                            {/* Última aparição com ícone */}
+                            <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg">
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="text-gray-700 dark:text-gray-300">Última aparição</span>
+                              </div>
+                              <span className="font-semibold text-blue-700 dark:text-blue-300">{getLastAppearance(number)}</span>
+                            </div>
+                            
+                            {/* Score IA com ícone */}
+                            <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 px-2 py-1.5 rounded-lg">
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                                <span className="text-gray-700 dark:text-gray-300">Score IA</span>
+                            </div>
+                              <span className="font-semibold text-amber-700 dark:text-amber-300">{stats ? Math.round(stats.score * 285) : '?'} pts</span>
+                            </div>
+                          </div>
+                          
+                          {/* Porcentagem de chance destaque */}
+                          <div className="mt-3 py-2 bg-gradient-to-r from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600 rounded-lg text-white font-medium text-center shadow-sm">
+                            <div className="text-xs opacity-80 mb-0.5">Probabilidade</div>
+                            <div className="text-base">{stats ? (stats.score * 100).toFixed(1) : '?'}%</div>
+                          </div>
+                          
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-gray-50 dark:border-t-gray-900"></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Terceira linha - 1 bola */}
+                <div className="flex justify-center">
+                  {aiResult.recommendedNumbers.slice(5, 6).map(number => {
+                    // Encontrar estatísticas deste número no heatmap
+                    const stats = aiResult.heatmap.find(item => item.number === number);
+                    
+                    return (
+                      <div key={number} className="relative group">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center font-bold text-xl shadow-xl transform hover:scale-110 transition-all duration-300 border-2 border-white dark:border-gray-700">
+                          {number}
+                        </div>
+                        
+                        {/* Badge de frequência */}
+                        {stats && (
+                          <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs rounded-full w-8 h-8 flex flex-col items-center justify-center font-bold shadow-md border border-white dark:border-gray-700">
+                            <span>{getFrequencyForNumber(number)}x</span>
+                          </div>
+                        )}
+                        
+                        {/* Tooltip com estatísticas - versão modernizada */}
+                        <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-200 text-xs rounded-xl py-3 px-4 shadow-2xl z-10 w-56 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+                          <div className="text-center mb-3">
+                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg shadow-inner">
+                              {number}
+                            </span>
+                            <div className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">Estatísticas</div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            {/* Barra de progresso para frequência */}
+                            <div>
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-xs font-medium">Frequência</span>
+                                <span className="text-xs font-bold">{getFrequencyForNumber(number)}x</span>
+                              </div>
+                              <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full" 
+                                     style={{ width: `${Math.min(100, getFrequencyForNumber(number) * 3)}%` }}></div>
+                              </div>
+                            </div>
+                            
+                            {/* Última aparição com ícone */}
+                            <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg">
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="text-gray-700 dark:text-gray-300">Última aparição</span>
+                              </div>
+                              <span className="font-semibold text-blue-700 dark:text-blue-300">{getLastAppearance(number)}</span>
+                            </div>
+                            
+                            {/* Score IA com ícone */}
+                            <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 px-2 py-1.5 rounded-lg">
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                                <span className="text-gray-700 dark:text-gray-300">Score IA</span>
+                            </div>
+                              <span className="font-semibold text-amber-700 dark:text-amber-300">{stats ? Math.round(stats.score * 285) : '?'} pts</span>
+                            </div>
+                          </div>
+                          
+                          {/* Porcentagem de chance destaque */}
+                          <div className="mt-3 py-2 bg-gradient-to-r from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600 rounded-lg text-white font-medium text-center shadow-sm">
+                            <div className="text-xs opacity-80 mb-0.5">Probabilidade</div>
+                            <div className="text-base">{stats ? (stats.score * 100).toFixed(1) : '?'}%</div>
+                          </div>
+                          
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-gray-50 dark:border-t-gray-900"></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             
             <div className="flex flex-col items-center space-y-3 mt-2">

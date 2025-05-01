@@ -80,7 +80,99 @@ const RecommendationBox: React.FC = () => {
               <span className="money-icon" style={{ left: '50%', animationDelay: '1.1s' }}>$</span>
               <span className="money-icon" style={{ left: '75%', animationDelay: '0.5s' }}>$</span>
               <span className="money-icon" style={{ left: '92%', animationDelay: '0.9s' }}>$</span>
-              {recommendations[0].numbers.map(number => {
+              
+              {/* Organização triangular das bolas */}
+              <div className="flex flex-col items-center w-full">
+                {/* Primeira linha - 3 bolas */}
+                <div className="flex justify-center gap-3 mb-4">
+                  {recommendations[0].numbers.slice(0, 3).map(number => {
+                    const stats = getNumberStatistics(number);
+                    return (
+                      <div 
+                        key={number} 
+                        className="relative group" 
+                        onMouseEnter={(e) => handleMouseEnter(e, number)} 
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-lg font-bold shadow-lg transform hover:scale-110 transition-transform duration-300 hover:shadow-xl">
+                          {number}
+                        </div>
+                        
+                        {stats && (
+                          <div className="absolute z-10 -bottom-2 -right-2 bg-gradient-to-r from-yellow-500 to-amber-400 text-white text-[10px] rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md border border-white dark:border-gray-800">
+                            {stats.frequency}x
+                          </div>
+                        )}
+                        
+                        {/* Tooltip com estatísticas detalhadas - versão modernizada */}
+                        {tooltipPosition && tooltipPosition.number === number && (
+                          <div 
+                            ref={tooltipRef}
+                            className="fixed z-50 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 
+                            text-gray-700 dark:text-gray-200 text-xs rounded-xl py-3 px-4 
+                            shadow-2xl w-52 border border-gray-100 dark:border-gray-700 backdrop-blur-sm"
+                            style={{
+                              left: `${tooltipPosition.x}px`,
+                              top: `${tooltipPosition.y - 10}px`,
+                              transform: 'translate(-50%, -100%)'
+                            }}
+                          >
+                            {stats && (
+                              <>
+                                <div className="text-center mb-3">
+                                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full 
+                                        bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg 
+                                        shadow-inner">
+                                    {number}
+                                  </span>
+                                  <div className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                    Estatísticas
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                  {/* Barra de progresso para frequência */}
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-medium flex items-center">
+                                        <BarChart2 size={12} className="mr-1.5 text-green-500" /> Frequência
+                                      </span>
+                                      <span className="text-xs font-bold">{stats.frequency}x</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-gradient-to-r from-green-400 to-green-500 rounded-full overflow-hidden">
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Última aparição com ícone */}
+                                  <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg">
+                                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                                      <Clock size={12} className="mr-1.5 text-blue-500" /> Última aparição
+                                    </span>
+                                    <span className="font-semibold text-blue-700 dark:text-blue-300">
+                                      {formatLastAppearance(stats.lastAppearance)}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                {/* Porcentagem de chance destaque */}
+                                <div className="mt-3 py-2 bg-gradient-to-r from-green-400 to-emerald-500 
+                                            dark:from-green-500 dark:to-emerald-600 rounded-lg text-white 
+                                            font-medium text-center shadow-sm">
+                                  <div className="text-xs opacity-80 mb-0.5">Probabilidade</div>
+                                  <div className="text-base">{stats.percentage.toFixed(1)}%</div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Segunda linha - 2 bolas */}
+                <div className="flex justify-center gap-3 mb-4">
+                  {recommendations[0].numbers.slice(3, 5).map(number => {
                 const stats = getNumberStatistics(number);
                 return (
                   <div 
@@ -163,6 +255,95 @@ const RecommendationBox: React.FC = () => {
                   </div>
                 );
               })}
+                </div>
+                
+                {/* Terceira linha - 1 bola */}
+                <div className="flex justify-center">
+                  {recommendations[0].numbers.slice(5, 6).map(number => {
+                    const stats = getNumberStatistics(number);
+                    return (
+                      <div 
+                        key={number} 
+                        className="relative group" 
+                        onMouseEnter={(e) => handleMouseEnter(e, number)} 
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-lg font-bold shadow-lg transform hover:scale-110 transition-transform duration-300 hover:shadow-xl">
+                          {number}
+                        </div>
+                        
+                        {stats && (
+                          <div className="absolute z-10 -bottom-2 -right-2 bg-gradient-to-r from-yellow-500 to-amber-400 text-white text-[10px] rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md border border-white dark:border-gray-800">
+                            {stats.frequency}x
+                          </div>
+                        )}
+                        
+                        {/* Tooltip com estatísticas detalhadas - versão modernizada */}
+                        {tooltipPosition && tooltipPosition.number === number && (
+                          <div 
+                            ref={tooltipRef}
+                            className="fixed z-50 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 
+                            text-gray-700 dark:text-gray-200 text-xs rounded-xl py-3 px-4 
+                            shadow-2xl w-52 border border-gray-100 dark:border-gray-700 backdrop-blur-sm"
+                            style={{
+                              left: `${tooltipPosition.x}px`,
+                              top: `${tooltipPosition.y - 10}px`,
+                              transform: 'translate(-50%, -100%)'
+                            }}
+                          >
+                            {stats && (
+                              <>
+                                <div className="text-center mb-3">
+                                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full 
+                                        bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg 
+                                        shadow-inner">
+                                    {number}
+                                  </span>
+                                  <div className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                    Estatísticas
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                  {/* Barra de progresso para frequência */}
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-medium flex items-center">
+                                        <BarChart2 size={12} className="mr-1.5 text-green-500" /> Frequência
+                                      </span>
+                                      <span className="text-xs font-bold">{stats.frequency}x</span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-gradient-to-r from-green-400 to-green-500 rounded-full overflow-hidden">
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Última aparição com ícone */}
+                                  <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg">
+                                    <span className="flex items-center text-gray-700 dark:text-gray-300">
+                                      <Clock size={12} className="mr-1.5 text-blue-500" /> Última aparição
+                                    </span>
+                                    <span className="font-semibold text-blue-700 dark:text-blue-300">
+                                      {formatLastAppearance(stats.lastAppearance)}
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                {/* Porcentagem de chance destaque */}
+                                <div className="mt-3 py-2 bg-gradient-to-r from-green-400 to-emerald-500 
+                                            dark:from-green-500 dark:to-emerald-600 rounded-lg text-white 
+                                            font-medium text-center shadow-sm">
+                                  <div className="text-xs opacity-80 mb-0.5">Probabilidade</div>
+                                  <div className="text-base">{stats.percentage.toFixed(1)}%</div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             
             <div className="text-center">
