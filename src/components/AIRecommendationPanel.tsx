@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
 import { analyzeResultsWithAI } from '../utils/aiAnalyzer';
 import { AIAnalysisResult, AIRecommendationSettings } from '../types';
-import { Brain, RefreshCw, Settings, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Brain, RefreshCw, Settings, Info } from 'lucide-react';
 
 const AIRecommendationPanel: React.FC = () => {
   const { filteredResults, numberStatistics, loading } = useData();
@@ -41,9 +41,12 @@ const AIRecommendationPanel: React.FC = () => {
   const getLastAppearance = (number: number) => {
     if (!filteredResults || filteredResults.length === 0) return 'N/A';
     
-    // Procurar em quais sorteios o número apareceu
+    // Verificar cada sorteio, do mais recente para o mais antigo
     for (let i = 0; i < filteredResults.length; i++) {
-      if (filteredResults[i].dezenas.includes(number.toString())) {
+      const dezenas = filteredResults[i].dezenas;
+      
+      // Verificar se o número está presente neste sorteio em qualquer formato
+      if (dezenas.some(d => parseInt(d) === number)) {
         return i === 0 ? 'Último sorteio' : `${i} sorteios atrás`;
       }
     }
@@ -66,7 +69,6 @@ const AIRecommendationPanel: React.FC = () => {
       const result = analyzeResultsWithAI(filteredResults, numberStatistics, settings);
       setAiResult(result);
     } catch (err) {
-      console.error('Erro na análise de IA:', err);
       setError('Falha ao processar análise de IA. Tente novamente.');
     } finally {
       setProcessing(false);
@@ -135,7 +137,7 @@ const AIRecommendationPanel: React.FC = () => {
       <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md text-sm text-blue-800 dark:text-blue-300 mb-4 flex items-start">
         <Info size={16} className="mr-2 flex-shrink-0 mt-0.5" />
         <p>
-          Os números exibem a <strong>frequência real</strong> de cada dezena nos sorteios analisados, junto com o <strong>score da IA</strong> que considera outros fatores estatísticos e padrões detectados.
+          Os números exibem a frequência real de cada dezena nos sorteios analisados, junto com o score da IA que pondera tendências recentes, padrões cíclicos e distribuições matemáticas para identificar números promissores.
         </p>
       </div>
 
@@ -326,29 +328,58 @@ const AIRecommendationPanel: React.FC = () => {
                       </div>
                     )}
                     
-                    {/* Tooltip com estatísticas */}
-                    <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-xs rounded-lg py-3 px-4 shadow-xl z-10 w-48 border border-gray-100 dark:border-gray-700">
-                      <div className="text-center font-medium border-b pb-2 border-gray-200 dark:border-gray-700 mb-3">
-                        <span className="text-sm">Número {number}</span>
+                    {/* Tooltip com estatísticas - versão modernizada */}
+                    <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-3 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-200 text-xs rounded-xl py-3 px-4 shadow-2xl z-10 w-56 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+                      <div className="text-center mb-3">
+                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg shadow-inner">
+                          {number}
+                        </span>
+                        <div className="mt-1 text-sm font-semibold text-gray-800 dark:text-gray-100">Estatísticas</div>
                       </div>
-                      <div className="space-y-2.5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 dark:text-gray-400">Frequência:</span>
-                          <span className="font-semibold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-md">{getFrequencyForNumber(number)} sorteios</span>
+                      
+                      <div className="space-y-3">
+                        {/* Barra de progresso para frequência */}
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs font-medium">Frequência</span>
+                            <span className="text-xs font-bold">{getFrequencyForNumber(number)}x</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full" 
+                                 style={{ width: `${Math.min(100, getFrequencyForNumber(number) * 3)}%` }}></div>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 dark:text-gray-400">Última aparição:</span>
-                          <span className="font-semibold bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-md">{getLastAppearance(number)}</span>
+                        
+                        {/* Última aparição com ícone */}
+                        <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg">
+                          <div className="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-gray-700 dark:text-gray-300">Última aparição</span>
+                          </div>
+                          <span className="font-semibold text-blue-700 dark:text-blue-300">{getLastAppearance(number)}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 dark:text-gray-400">Score IA:</span>
-                          <span className="font-semibold bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-md">{stats ? Math.round(stats.score * 285) : '?'} pts</span>
+                        
+                        {/* Score IA com ícone */}
+                        <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 px-2 py-1.5 rounded-lg">
+                          <div className="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                            <span className="text-gray-700 dark:text-gray-300">Score IA</span>
                         </div>
-                        <div className="text-center mt-3 py-1.5 bg-green-100 dark:bg-green-900/30 rounded-md text-green-600 dark:text-green-400 font-medium">
-                          {stats ? (stats.score * 100).toFixed(1) : '?'}% de chance
+                          <span className="font-semibold text-amber-700 dark:text-amber-300">{stats ? Math.round(stats.score * 285) : '?'} pts</span>
                         </div>
                       </div>
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-white dark:border-t-gray-800"></div>
+                      
+                      {/* Porcentagem de chance destaque */}
+                      <div className="mt-3 py-2 bg-gradient-to-r from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600 rounded-lg text-white font-medium text-center shadow-sm">
+                        <div className="text-xs opacity-80 mb-0.5">Probabilidade</div>
+                        <div className="text-base">{stats ? (stats.score * 100).toFixed(1) : '?'}%</div>
+                      </div>
+                      
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-gray-50 dark:border-t-gray-900"></div>
                     </div>
                   </div>
                 );

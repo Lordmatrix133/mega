@@ -87,16 +87,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Se range já definido, filtrar os resultados
         setFilteredResults(data);
       }
-      
-      console.log('Dados obtidos com sucesso!', {
-        concurso: data[0].concurso,
-        dataUltimoSorteio: data[0].data,
-        dataProximoSorteio: data[0].dataProximoConcurso
-      });
     } catch (err: any) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao conectar à API';
       setError(`Falha ao buscar resultados da Mega Sena. ${errorMessage}`);
-      console.error('Erro na busca de dados:', err);
       
       // Limpar os dados parciais que possam existir
       setResults([]);
@@ -132,7 +125,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Tentar outros formatos (ISO, etc)
         return new Date(dateStr);
       } catch (error) {
-        console.warn(`Erro ao converter data: ${dateStr}`, error);
         return null;
       }
     };

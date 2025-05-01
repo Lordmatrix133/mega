@@ -86,7 +86,9 @@ const ResultDetail: React.FC<ResultDetailProps> = ({ result, onClose }) => {
                     <div className="flex justify-between mb-1">
                       <span className="font-medium text-gray-800 dark:text-gray-200">{premiacao.descricao || premiacao.acertos}</span>
                       <span className="font-bold text-green-600 dark:text-green-400">
-                        {formatCurrency(Number(premiacao.valorPremio || premiacao.premio || 0))}
+                        {formatCurrency(premiacao.valorPremio !== undefined && premiacao.valorPremio !== null ? 
+                          Number(premiacao.valorPremio) : 
+                          (premiacao.premio ? Number(premiacao.premio) : 0))}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -123,7 +125,7 @@ const ResultDetail: React.FC<ResultDetailProps> = ({ result, onClose }) => {
                 <div className="text-right">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Prêmio Estimado</p>
                   <p className="font-bold text-xl text-green-600 dark:text-green-400">
-                    {formatCurrency(Number(result.valorEstimadoProximoConcurso || 0))}
+                    {formatCurrency(result.valorEstimadoProximoConcurso ? Number(result.valorEstimadoProximoConcurso) : 0)}
                   </p>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MegaSenaResult, LocalGanhador } from '../types';
+import { MegaSenaResult } from '../types';
 import { MapPin } from 'lucide-react';
 
 interface WinnersListProps {
@@ -35,7 +35,7 @@ const WinnersList: React.FC<WinnersListProps> = ({ result }) => {
                 <p className="font-medium text-gray-900 dark:text-white">
                   {local.ganhadores} {local.ganhadores === 1 ? 'ganhador' : 'ganhadores'} em {local.municipio || 'Não informado'} - {local.uf}
                 </p>
-                {local?.nomeFantasiaUL?.length && (
+                {local?.nomeFantasiaUL && local.nomeFantasiaUL.length > 0 && (
                   <span className="text-xs text-zinc-500 block">
                     Lotérica: {local.nomeFantasiaUL}
                   </span>

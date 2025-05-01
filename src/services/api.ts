@@ -18,7 +18,6 @@ export const fetchMegaSenaResults = async (timestamp?: number): Promise<MegaSena
       throw new Error('Nenhum resultado obtido da API');
     }
     
-    console.log(`Obtido com sucesso ${results.length} resultados da Mega Sena`);
     return results;
   } catch (error) {
     console.error('Falha ao obter dados da API:', error);
@@ -37,7 +36,6 @@ const fetchAllLoteriasResults = async (timestamp?: number): Promise<MegaSenaResu
   try {
     return await fetchFromAPI(`${MAIN_API_URL}?_=${ts}`);
   } catch (mainApiError) {
-    console.warn('API principal falhou, tentando API alternativa:', mainApiError);
     
     // Se a API principal falhar, tentar a API de backup
     try {
@@ -100,7 +98,7 @@ const fetchFromAPI = async (url: string): Promise<MegaSenaResult[]> => {
         acertos: prem.descricao || `${prem.faixa === 1 ? '6' : prem.faixa === 2 ? '5' : '4'} acertos`,
         ganhadores: prem.ganhadores || 0,
         valorPremio: prem.valorPremio,
-        premio: prem.valorPremio?.toString() || "0",
+        premio: prem.valorPremio !== undefined && prem.valorPremio !== null ? prem.valorPremio.toString() : "0",
       })) || [],
       acumulou: item.acumulou === undefined ? (item.premiacoes?.[0]?.ganhadores === 0) : item.acumulou,
       valorAcumulado: item.valorAcumuladoProximoConcurso?.toString() || "0",
@@ -108,7 +106,6 @@ const fetchFromAPI = async (url: string): Promise<MegaSenaResult[]> => {
       valorEstimadoProximoConcurso: item.valorEstimadoProximoConcurso?.toString() || "0",
     }));
   } catch (error) {
-    console.warn('API falhou:', error);
     throw error;
   }
 };

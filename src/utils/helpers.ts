@@ -1,4 +1,4 @@
-import { MegaSenaResult, NumberStatistics, DrawFrequency } from '../types';
+import { MegaSenaResult, NumberStatistics } from '../types';
 
 export const calculateNumberStatistics = (results: MegaSenaResult[]): NumberStatistics[] => {
   const numberStats: NumberStatistics[] = Array.from({ length: 60 }, (_, i) => ({
@@ -212,9 +212,6 @@ export const getNextDrawDetails = (dateString: string): {
   
   // Verificar se é um dia oficial de sorteio da Mega-Sena (terça, quinta, sábado)
   const isDrawDay = dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 6; // 2 = terça, 4 = quinta, 6 = sábado
-  
-  // Log para debug
-  console.log(`Data processada: ${drawDate.toISOString()}, Dia da semana: ${diaSemana} (${dayOfWeek}), É dia de sorteio: ${isDrawDay}`);
   
   return {
     date: drawDate,
