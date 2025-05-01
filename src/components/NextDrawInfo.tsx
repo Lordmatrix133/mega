@@ -123,12 +123,12 @@ const NextDrawInfo: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+        <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg relative overflow-hidden">
           <Trophy className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
           <div>
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Prêmio Estimado</h3>
-            <p className="text-lg font-semibold text-gray-800 dark:text-white">
-              {formatCurrency(nextDrawInfo.valorEstimadoProximoConcurso)}
+            <p className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+              <span className="relative z-10">{formatCurrency(nextDrawInfo.valorEstimadoProximoConcurso)}</span>
             </p>
             <div className="flex items-center">
               {nextDrawInfo.acumulou && (
@@ -147,6 +147,13 @@ const NextDrawInfo: React.FC = () => {
               )}
             </div>
           </div>
+          
+          {/* Cifrões animados */}
+          <span className="money-icon text-yellow-500 dark:text-yellow-400 font-bold text-sm" style={{ left: '10%', top: '20%', animationDelay: '0s' }}>$</span>
+          <span className="money-icon text-yellow-500 dark:text-yellow-400 font-bold text-sm" style={{ left: '25%', top: '30%', animationDelay: '0.7s' }}>$</span>
+          <span className="money-icon text-yellow-500 dark:text-yellow-400 font-bold text-sm" style={{ left: '40%', top: '15%', animationDelay: '1.4s' }}>$</span>
+          <span className="money-icon text-yellow-500 dark:text-yellow-400 font-bold text-sm" style={{ left: '60%', top: '25%', animationDelay: '0.4s' }}>$</span>
+          <span className="money-icon text-yellow-500 dark:text-yellow-400 font-bold text-sm" style={{ left: '80%', top: '20%', animationDelay: '1.1s' }}>$</span>
         </div>
         
         <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">

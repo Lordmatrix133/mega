@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Moon, Sun } from 'lucide-react';
+import megaSenaLogo from '../favicon/logo-mega-sena-em-png.png';
 
 const Header: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(
@@ -39,9 +40,9 @@ const Header: React.FC = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
             <span className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
                 <div className="w-8 h-8 flex items-center justify-center">
-                  🍀
+                  <img src={megaSenaLogo} alt="Mega Sena" className="w-7 h-7 object-contain" />
                 </div>
               </div>
               <h1 className="text-xl font-bold">Mega Sena Analyzer</h1>

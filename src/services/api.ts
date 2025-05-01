@@ -1,5 +1,9 @@
 import { MegaSenaResult } from '../types';
 
+// URL alternativa como fallback caso a principal falhe
+const MAIN_API_URL = 'https://loteriascaixa-api.herokuapp.com/api/megasena';
+const BACKUP_API_URL = 'https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena';
+
 /**
  * Fetches Mega Sena results from the API
  * @param timestamp Opcional: timestamp para evitar cache
@@ -26,11 +30,30 @@ export const fetchMegaSenaResults = async (timestamp?: number): Promise<MegaSena
  * Obtém todos os resultados diretamente do endpoint da API loteriascaixa
  */
 const fetchAllLoteriasResults = async (timestamp?: number): Promise<MegaSenaResult[]> => {
+  // Usar o timestamp para evitar cache
+  const ts = timestamp || new Date().getTime();
+  
+  // Tentar a API principal primeiro
   try {
-    // Usar o timestamp para evitar cache
-    const ts = timestamp || new Date().getTime();
-    const url = `https://loteriascaixa-api.herokuapp.com/api/megasena?_=${ts}`;
+    return await fetchFromAPI(`${MAIN_API_URL}?_=${ts}`);
+  } catch (mainApiError) {
+    console.warn('API principal falhou, tentando API alternativa:', mainApiError);
     
+    // Se a API principal falhar, tentar a API de backup
+    try {
+      return await fetchFromAPI(`${BACKUP_API_URL}?_=${ts}`);
+    } catch (backupApiError) {
+      // Se ambas falharem, lançar o erro original
+      throw mainApiError;
+    }
+  }
+};
+
+/**
+ * Função auxiliar para fazer o fetch de uma API específica
+ */
+const fetchFromAPI = async (url: string): Promise<MegaSenaResult[]> => {
+  try {
     const response = await fetch(url, {
       cache: 'no-store',
       headers: {
@@ -44,7 +67,16 @@ const fetchAllLoteriasResults = async (timestamp?: number): Promise<MegaSenaResu
       throw new Error(`API de loterias falhou com status ${response.status}`);
     }
     
-    const data = await response.json();
+    // Obter o texto da resposta antes de fazer o parse
+    const textResponse = await response.text();
+    
+    // Tentar fazer o parse do JSON, com tratamento de erro mais específico
+    let data;
+    try {
+      data = JSON.parse(textResponse);
+    } catch (jsonError) {
+      throw new Error(`Erro ao processar JSON da API: ${(jsonError as Error).message}`);
+    }
     
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error('Formato de dados inválido');
@@ -76,7 +108,7 @@ const fetchAllLoteriasResults = async (timestamp?: number): Promise<MegaSenaResu
       valorEstimadoProximoConcurso: item.valorEstimadoProximoConcurso?.toString() || "0",
     }));
   } catch (error) {
-    console.warn('API de loterias falhou:', error);
+    console.warn('API falhou:', error);
     throw error;
   }
 };
