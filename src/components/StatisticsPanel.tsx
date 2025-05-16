@@ -38,7 +38,7 @@ const StatisticsPanel: React.FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-all">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Estatísticas dos Números</h2>
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Estatísticas Históricas dos Números</h2>
         
         <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 p-0.5 rounded-lg">
           <button 

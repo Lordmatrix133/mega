@@ -18,6 +18,16 @@
     @apply bg-gray-100 dark:bg-gray-900 min-h-screen;
   }
 
+  /* Remove o outline padrão de todos os elementos */
+  * {
+    outline: none !important;
+  }
+
+  /* Estiliza o outline apenas para navegação por teclado */
+  *:focus-visible {
+    @apply ring-2 ring-green-500 ring-opacity-50;
+  }
+
   /* Personalização da barra de rolagem */
   ::-webkit-scrollbar {
     height: 6px;
@@ -358,9 +368,11 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -376,9 +388,131 @@
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .animate-scaleIn {
   animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Animação específica para os cifrões da tela de login */
+@keyframes login-floating-dollar {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-60px) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+.login-money-icon {
+  @apply absolute opacity-70 font-bold;
+  z-index: 5;
+  animation: login-floating-dollar 4s ease-in-out infinite;
+}
+
+@layer utilities {
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in infinite;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+}
+
+/* Animações Globais */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100px) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animação para o avatar do admin */
+@keyframes admin-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px theme('colors.yellow.500'), 
+                0 0 10px theme('colors.yellow.400'),
+                0 0 15px theme('colors.yellow.300');
+  }
+  50% {
+    box-shadow: 0 0 10px theme('colors.yellow.500'),
+                0 0 20px theme('colors.yellow.400'),
+                0 0 30px theme('colors.yellow.300');
+  }
+}
+
+.admin-avatar {
+  animation: admin-glow 3s ease-in-out infinite;
 }

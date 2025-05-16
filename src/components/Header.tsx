@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Moon, Sun } from 'lucide-react';
+import { Menu, X, Moon, Sun, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import megaSenaLogo from '../favicon/logo-mega-sena-em-png.png';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
+  const { logout } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(
-    localStorage.getItem('theme') !== 'light'  // Modo noturno é o padrão agora
+    localStorage.getItem('theme') === 'dark'  // Modo claro é o padrão agora
   );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
@@ -18,11 +21,11 @@ const Header: React.FC = () => {
     }
   }, [isDarkMode]);
 
-  // Aplicar modo escuro por padrão ao iniciar o componente
+  // Aplicar modo claro por padrão ao iniciar o componente
   useEffect(() => {
     if (!localStorage.getItem('theme')) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   }, []);
 
@@ -39,20 +42,23 @@ const Header: React.FC = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
-            <span className="flex items-center space-x-2">
+            <Link to="/dashboard" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
                 <div className="w-8 h-8 flex items-center justify-center">
                   <img src={megaSenaLogo} alt="Mega Sena" className="w-7 h-7 object-contain" />
                 </div>
               </div>
               <h1 className="text-xl font-bold">Mega Sena Analyzer</h1>
-            </span>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <a href="#dashboard" className="text-white hover:text-yellow-200 transition-colors">
+            <Link to="/dashboard" className="text-white hover:text-yellow-200 transition-colors">
               Painel
+            </Link>
+            <a href="#ball-selector" className="text-white hover:text-yellow-200 transition-colors">
+              Registrar Jogo
             </a>
             <a href="#statistics" className="text-white hover:text-yellow-200 transition-colors">
               Estatísticas
@@ -66,6 +72,14 @@ const Header: React.FC = () => {
               aria-label="Alternar modo escuro"
             >
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button
+              onClick={logout}
+              className="flex items-center space-x-2 text-white hover:text-yellow-200 transition-colors"
+              aria-label="Sair"
+            >
+              <LogOut size={20} />
+              <span>Sair</span>
             </button>
           </nav>
 
@@ -86,12 +100,19 @@ const Header: React.FC = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-green-700 dark:bg-green-900 shadow-inner w-full">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a 
-              href="#dashboard" 
+            <Link 
+              to="/dashboard" 
               className="block px-3 py-2 rounded-md text-white hover:bg-green-600 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Painel
+            </Link>
+            <a 
+              href="#ball-selector" 
+              className="block px-3 py-2 rounded-md text-white hover:bg-green-600 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Registrar Jogo
             </a>
             <a 
               href="#statistics" 
@@ -120,6 +141,12 @@ const Header: React.FC = () => {
                   <Moon size={20} className="mr-2" /> Modo Escuro
                 </>
               )}
+            </button>
+            <button
+              onClick={logout}
+              className="w-full text-left px-3 py-2 rounded-md text-white hover:bg-green-600 transition-colors flex items-center"
+            >
+              <LogOut size={20} className="mr-2" /> Sair
             </button>
           </div>
         </div>

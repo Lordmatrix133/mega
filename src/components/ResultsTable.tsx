@@ -93,6 +93,9 @@ const ResultsTable: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
+              <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Ações
+              </th>
               <th 
                 scope="col" 
                 className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
@@ -138,9 +141,6 @@ const ResultsTable: React.FC = () => {
               <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">
                 Local
               </th>
-              <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Ações
-              </th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -150,7 +150,13 @@ const ResultsTable: React.FC = () => {
                   Carregando resultados...
                 </td>
               </tr>
-            ) : paginatedResults.length === 0 ? (
+            ) : error ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                  Erro ao carregar resultados. Por favor, tente novamente.
+                </td>
+              </tr>
+            ) : filteredResults.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                   Nenhum resultado encontrado.
@@ -159,6 +165,15 @@ const ResultsTable: React.FC = () => {
             ) : (
               paginatedResults.map((result) => (
                 <tr key={result.concurso} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <td className="px-4 py-4 whitespace-nowrap text-center">
+                    <button
+                      onClick={() => handleOpenDetails(result)}
+                      className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                      title="Ver detalhes"
+                    >
+                      <Info size={18} />
+                    </button>
+                  </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     {result.concurso}
                   </td>
@@ -188,15 +203,6 @@ const ResultsTable: React.FC = () => {
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 hidden md:table-cell">
                     {result.local ? result.local.split('em')[1]?.trim() || result.local : '-'}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-center">
-                    <button
-                      onClick={() => handleOpenDetails(result)}
-                      className="text-blue-500 hover:text-blue-700 focus:outline-none"
-                      title="Ver detalhes"
-                    >
-                      <Info size={18} />
-                    </button>
                   </td>
                 </tr>
               ))

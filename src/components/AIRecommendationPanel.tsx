@@ -106,6 +106,36 @@ const AIRecommendationPanel: React.FC = () => {
     }
   }, [showCopyModal]);
 
+  // Função para calcular frequência recente (últimos 30 sorteios)
+  const getRecentFrequencyForNumber = (number: number) => {
+    if (!filteredResults || filteredResults.length === 0) return 0;
+    
+    const recentResults = filteredResults.slice(0, Math.min(30, filteredResults.length));
+    let count = 0;
+    
+    recentResults.forEach(result => {
+      if (result.dezenas.some(d => parseInt(d) === number)) {
+        count++;
+      }
+    });
+    
+    return count;
+  };
+
+  // Função para calcular taxa de frequência normalizada para comparações justas
+  const getNormalizedFrequencyRate = (number: number, isRecent: boolean) => {
+    if (!filteredResults || filteredResults.length === 0) return 0;
+    
+    if (isRecent) {
+      const recentCount = getRecentFrequencyForNumber(number);
+      const recentTotal = Math.min(30, filteredResults.length);
+      return recentCount / recentTotal;
+    } else {
+      const totalFreq = getFrequencyForNumber(number);
+      return totalFreq / filteredResults.length;
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-all">
       <div className="flex justify-between items-center mb-4">
@@ -137,7 +167,7 @@ const AIRecommendationPanel: React.FC = () => {
       <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md text-sm text-blue-800 dark:text-blue-300 mb-4 flex items-start">
         <Info size={16} className="mr-2 flex-shrink-0 mt-0.5" />
         <p>
-          Os números exibem a frequência real de cada dezena nos sorteios analisados, junto com o score da IA que pondera tendências recentes, padrões cíclicos e distribuições matemáticas para identificar números promissores.
+          Esta análise considera <strong>100% dos dados históricos</strong> disponíveis na API. Os números exibem a frequência real de cada dezena nos sorteios analisados, junto com o score da IA que pondera tendências recentes, padrões cíclicos e distribuições matemáticas para identificar números promissores.
         </p>
       </div>
 
@@ -620,7 +650,7 @@ const AIRecommendationPanel: React.FC = () => {
               </button>
             </div>
             
-            <div id="heatmap-container" className="overflow-x-auto pb-2 results-table-container">
+            <div id="heatmap-container" className="overflow-x-auto pb-2 results-table-container pl-8 pr-8">
               <div className="flex space-x-2 min-w-max p-2">
                 {aiResult.heatmap.map(item => {
                   const realFreq = getFrequencyForNumber(item.number);
@@ -657,6 +687,219 @@ const AIRecommendationPanel: React.FC = () => {
             <p className="mt-2">
               Análise baseada em {filteredResults.length} resultados reais.
             </p>
+          </div>
+          
+          {/* Add a section highlighting hot numbers */}
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
+              Números "Quentes" (alta frequência recente)
+            </h3>
+            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-15 gap-2 mb-4">
+              {aiResult.heatmap
+                .filter(item => {
+                  // Find the score threshold for the top 15 numbers
+                  const sortedScores = [...aiResult.heatmap]
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 15);
+                  
+                  const minTopScore = sortedScores[sortedScores.length - 1]?.score || 0;
+                  return item.score >= minTopScore;
+                })
+                .sort((a, b) => b.score - a.score)
+                .map(item => (
+                  <div 
+                    key={`hot-${item.number}`}
+                    className={`flex flex-col items-center justify-center p-2 rounded-md 
+                      ${aiResult.recommendedNumbers.includes(item.number) 
+                        ? 'bg-green-100 dark:bg-green-900/30 border border-green-500' 
+                        : 'bg-orange-100 dark:bg-orange-900/30'}`}
+                  >
+                    <span className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                      {item.number}
+                    </span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      Score: {item.score.toFixed(3)}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {getLastAppearance(item.number)}
+                    </span>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+          
+          {/* NOVA SEÇÃO: Estatísticas dos Números */}
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">
+              Estatísticas Detalhadas dos Números
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 1. Números mais frequentes historicamente */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                <h4 className="text-md font-medium text-blue-800 dark:text-blue-300 mb-3">
+                  Mais Frequentes Historicamente
+                </h4>
+                <div className="grid grid-cols-5 gap-2">
+                  {numberStatistics
+                    .sort((a, b) => b.frequency - a.frequency)
+                    .slice(0, 10)
+                    .map(stat => (
+                      <div 
+                        key={`hist-high-${stat.number}`}
+                        className={`flex flex-col items-center justify-center p-2 rounded-md
+                          ${aiResult.recommendedNumbers.includes(stat.number) ? 
+                            'bg-blue-200 dark:bg-blue-800/40 border border-blue-500' : 
+                            'bg-blue-100 dark:bg-blue-900/30'}`}
+                      >
+                        <span className="text-lg font-bold text-blue-800 dark:text-blue-300">
+                          {stat.number}
+                        </span>
+                        <span className="text-xs text-blue-700 dark:text-blue-400">
+                          {stat.frequency}x
+                        </span>
+                        <span className="text-xs text-blue-600 dark:text-blue-500">
+                          {(stat.percentage * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+              
+              {/* 2. Números menos frequentes historicamente */}
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                <h4 className="text-md font-medium text-purple-800 dark:text-purple-300 mb-3">
+                  Menos Frequentes Historicamente
+                </h4>
+                <div className="grid grid-cols-5 gap-2">
+                  {numberStatistics
+                    .sort((a, b) => a.frequency - b.frequency)
+                    .slice(0, 10)
+                    .map(stat => (
+                      <div 
+                        key={`hist-low-${stat.number}`}
+                        className={`flex flex-col items-center justify-center p-2 rounded-md
+                          ${aiResult.recommendedNumbers.includes(stat.number) ? 
+                            'bg-purple-200 dark:bg-purple-800/40 border border-purple-500' : 
+                            'bg-purple-100 dark:bg-purple-900/30'}`}
+                      >
+                        <span className="text-lg font-bold text-purple-800 dark:text-purple-300">
+                          {stat.number}
+                        </span>
+                        <span className="text-xs text-purple-700 dark:text-purple-400">
+                          {stat.frequency}x
+                        </span>
+                        <span className="text-xs text-purple-600 dark:text-purple-500">
+                          {(stat.percentage * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+              
+              {/* 3. Números mais frequentes atualmente */}
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <h4 className="text-md font-medium text-green-800 dark:text-green-300 mb-3">
+                  Mais Frequentes Atualmente (últimos 30 sorteios)
+                </h4>
+                <div className="grid grid-cols-5 gap-2">
+                  {Array.from({length: 60}, (_, i) => i + 1)
+                    .map(num => ({
+                      number: num,
+                      recentFreq: getRecentFrequencyForNumber(num)
+                    }))
+                    .sort((a, b) => b.recentFreq - a.recentFreq)
+                    .slice(0, 10)
+                    .map(item => {
+                      const histFreq = getFrequencyForNumber(item.number);
+                      const recentRate = getNormalizedFrequencyRate(item.number, true);
+                      const histRate = getNormalizedFrequencyRate(item.number, false);
+                      const trend = recentRate > histRate ? "↑" : recentRate < histRate ? "↓" : "→";
+                      const trendColor = recentRate > histRate ? "text-green-600" : 
+                                        recentRate < histRate ? "text-red-600" : "text-gray-600";
+                      
+                      return (
+                        <div 
+                          key={`recent-high-${item.number}`}
+                          className={`flex flex-col items-center justify-center p-2 rounded-md
+                            ${aiResult.recommendedNumbers.includes(item.number) ? 
+                              'bg-green-200 dark:bg-green-800/40 border border-green-500' : 
+                              'bg-green-100 dark:bg-green-900/30'}`}
+                        >
+                          <span className="text-lg font-bold text-green-800 dark:text-green-300">
+                            {item.number}
+                          </span>
+                          <span className="text-xs text-green-700 dark:text-green-400">
+                            {item.recentFreq}x <span className={`${trendColor} font-bold`}>{trend}</span>
+                          </span>
+                          <span className="text-xs text-green-600 dark:text-green-500">
+                            Hist: {histFreq}x
+                          </span>
+                        </div>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+              
+              {/* 4. Números menos frequentes atualmente */}
+              <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
+                <h4 className="text-md font-medium text-amber-800 dark:text-amber-300 mb-3">
+                  Menos Frequentes Atualmente (últimos 30 sorteios)
+                </h4>
+                <div className="grid grid-cols-5 gap-2">
+                  {Array.from({length: 60}, (_, i) => i + 1)
+                    .map(num => ({
+                      number: num,
+                      recentFreq: getRecentFrequencyForNumber(num)
+                    }))
+                    .sort((a, b) => a.recentFreq - b.recentFreq)
+                    .slice(0, 10)
+                    .map(item => {
+                      const histFreq = getFrequencyForNumber(item.number);
+                      const recentRate = getNormalizedFrequencyRate(item.number, true);
+                      const histRate = getNormalizedFrequencyRate(item.number, false);
+                      const trend = recentRate > histRate ? "↑" : recentRate < histRate ? "↓" : "→";
+                      const trendColor = recentRate > histRate ? "text-green-600" : 
+                                        recentRate < histRate ? "text-red-600" : "text-gray-600";
+                      
+                      return (
+                        <div 
+                          key={`recent-low-${item.number}`}
+                          className={`flex flex-col items-center justify-center p-2 rounded-md
+                            ${aiResult.recommendedNumbers.includes(item.number) ? 
+                              'bg-amber-200 dark:bg-amber-800/40 border border-amber-500' : 
+                              'bg-amber-100 dark:bg-amber-900/30'}`}
+                        >
+                          <span className="text-lg font-bold text-amber-800 dark:text-amber-300">
+                            {item.number}
+                          </span>
+                          <span className="text-xs text-amber-700 dark:text-amber-400">
+                            {item.recentFreq}x <span className={`${trendColor} font-bold`}>{trend}</span>
+                          </span>
+                          <span className="text-xs text-amber-600 dark:text-amber-500">
+                            Hist: {histFreq}x
+                          </span>
+                        </div>
+                      );
+                    })
+                  }
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+              <p className="flex items-center">
+                <span className="mr-1 text-green-600 dark:text-green-500 font-bold">↑</span> Em alta relativa ao histórico
+                <span className="mx-2">|</span>
+                <span className="mr-1 text-red-600 dark:text-red-500 font-bold">↓</span> Em baixa relativa ao histórico
+                <span className="mx-2">|</span>
+                <span className="mr-1 text-gray-600 dark:text-gray-500 font-bold">→</span> Estável
+              </p>
+            </div>
           </div>
         </div>
       )}
